@@ -4,10 +4,10 @@ var dbconnect = {
     getConnection : function () {
         var conn = mysql.createConnection({
            // host: "localhost",
-           host: "myowndatabase1.cqqczc8tt7jg.us-east-1.rds.amazonaws.com",
+           host: "localhost",
             user: "root",
-            password: "12341234",
-            database: "grocery1"
+            password: "1234",
+            database: "grocery_assignment1"
         });
         return conn;
     }
