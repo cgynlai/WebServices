@@ -71,10 +71,9 @@ getDiscountedProduct : function(callback){
                     if (err){
                         console.log(err);
                         return callback(err,null);
-                    } 
-                    
-                })
-                console.log("show discounted price!!!");
+                    } else {
+
+                        console.log("show discounted price!!!");
                 var sql = 'SELECT * FROM product_listing';
                 conn.query(sql, function(err,result){
                     conn.end();
@@ -85,6 +84,12 @@ getDiscountedProduct : function(callback){
                         return callback(null,result)
                     }
                 })
+                    }
+
+
+                    
+                })
+                
             }
         })
     },
