@@ -12,7 +12,7 @@ var productDB = {
             }
             else {
                 console.log('product db connected!! ');
-                var sql = 'SELECT product_id, product_name, product_description,price,quantity,cat_id,image_url,dateinserted FROM product_listing';
+                var sql = 'SELECT product_id, product_name, product_description,price,quantity,category,cat_id,image_url,dateinserted FROM product_listing';
                 conn.query(sql, function (err, result) {
                     conn.end();
                     if (err) {
@@ -37,8 +37,8 @@ var productDB = {
             }
             else {
                 console.log('db connected!! ');
-                var sql = 'SELECT * FROM product_listing WHERE product_description like ? ORDER by price ASC';
-                conn.query(sql, ['%' + searchstring + '%'], function (err, result) {
+                var sql = 'SELECT * FROM product_listing WHERE product_description like ? or category=? ORDER by price ASC';
+                conn.query(sql, ['%' + searchstring + '%', searchstring], function (err, result) {
                     conn.end();
                     if (err) {
                         console.log(err);
@@ -122,7 +122,7 @@ var productDB = {
         });
     },
 
-    // update product
+    // update product and before that log original product detail to anothe table
     updateProduct: function (product_name, price, cat_id, image_url, quantity, product_description, id, callback) {
 
         var dbConn = db.getConnection();
@@ -142,21 +142,27 @@ var productDB = {
                         console.log('result is' + result);
                         console.log(result[0].product_name);
                         var origProductname = result[0].product_name;
+                        var origProdes = result[0].product_description;
                         var origPrice = result[0].price;
+                        var origDisprice = result[0].discounted_price;
                         var origQuantity = result[0].quantity;
+                        var origCategory = result[0].category;
+                        var origImag = result[0].image_url;
                         var origCat = result[0].cat_id;
-                        var sqllog1 = 'CREATE TABLE IF NOT EXISTS productLog1 (product_id INT NOT NULL,product_name VARCHAR(100), price DECIMAL(4,2), quantity INT, cat_id INT)'
+                        var origDate = result[0].dateinserted;
+                        var sqllog1 = 'CREATE TABLE IF NOT EXISTS productLog1 (product_id INT NOT NULL, product_name VARCHAR(45), product_description VARCHAR(255),price DECIMAL(4,2),discounted_price DECIMAL(5,2), quantity INT, category VARCHAR(100),cat_id INT, image_url VARCHAR(45), dateinserted TIMESTAMP)'
                         dbConn.query(sqllog1, function (err, result) {
                             // conn.end();
                             if (err) {
                                 console.log(err);
                                 return callback(err, null);
                             } else {
-                                var sqllog2 = 'insert into productlog1 (product_id,product_name, price, quantity, cat_id) values (?,?,?,?,?)'
-                                dbConn.query(sqllog2, [id,origProductname, origPrice, origQuantity, origCat], function (err, result) {
+                                var sqllog2 = 'insert into productlog1 (product_id, product_name, product_description,price, discounted_price, quantity,category,cat_id, image_url, dateinserted) values (?,?,?,?,?,?,?,?,?,?)'
+                                dbConn.query(sqllog2, [id,origProductname, origProdes,origPrice, origDisprice,origQuantity, origCategory,origCat, origImag,origDate], function (err, result) {
                                     // conn.end();
                                     if (err) {
                                         console.log(err);
+                                        console.log("error here");
                                         return callback(err, null);
                                     } else {
                                         console.log('insert successful');
